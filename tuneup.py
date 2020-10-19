@@ -5,11 +5,12 @@
 Use the timeit and cProfile libraries to find bad code.
 """
 
-__author__ = "???"
+__author__ = "Tiree I google searches"
 
 import cProfile
 import pstats
 import functools
+import timeit
 
 
 def profile(func):
@@ -18,7 +19,17 @@ def profile(func):
     """
     # Be sure to review the lesson material on decorators.
     # You need to understand how they are constructed and used.
-    raise NotImplementedError("Complete this decorator function")
+
+    def wrapper(*args, **kwargs):
+        pr = cProfile.Profile()
+        pr.enable()
+        result = func(*args, **kwargs)
+        pr.disable()
+        sort_by = 'cumulative'
+        ps = pstats.Stats(pr).sort_stats(sort_by)
+        ps.print_stats()
+        return result
+    return wrapper
 
 
 def read_movies(src):
@@ -31,7 +42,7 @@ def read_movies(src):
 def is_duplicate(title, movies):
     """Returns True if title is within movies list."""
     for movie in movies:
-        if movie.lower() == title.lower():
+        if movie == title:
             return True
     return False
 
@@ -50,6 +61,8 @@ def find_duplicate_movies(src):
 #
 # Students: write a better version of find_duplicate_movies
 #
+
+
 def optimized_find_duplicate_movies(src):
     # Your code here
     return
@@ -90,9 +103,10 @@ def main():
 
     print("\n--- cProfile results, before optimization ---")
     profile(find_duplicate_movies)(filename)
-    
+
     print("\n--- cProfile results, after optimization ---")
     profile(optimized_find_duplicate_movies)(filename)
+
 
 if __name__ == '__main__':
     main()
